@@ -1,7 +1,7 @@
 {
   "name": "slugy",
   "productName": "Slugy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Slugify all files recursively",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -71,8 +71,7 @@
     },
     "win": {
       "target": [
-        "nsis",
-        "msi"
+        "nsis"
       ]
     },
     "linux": {
