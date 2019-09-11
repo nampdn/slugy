@@ -81,7 +81,7 @@ const Home = () => {
         >
           <button
             className={styles.button}
-            style={{ maxWidth: 100, margin: '20px' }}
+            style={{ margin: '20px' }}
             type="button"
             onClick={openDirectory}
           >
