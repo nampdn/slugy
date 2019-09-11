@@ -9,8 +9,9 @@ const Home = () => {
   const [isWorking, setIsWorking] = useState(false);
 
   useEffect(() => {
-    ipcRenderer.on('slugify-select-dir', () => {
-      setPath(path);
+    // eslint:disable-next-line
+    ipcRenderer.on('slugify-select-dir', (_, selectedPath) => {
+      setPath(selectedPath);
       setIsWorking(false);
     });
 

@@ -73,7 +73,7 @@ ipcMain.on('load-dir', event => {
       properties: ['openDirectory']
     },
     data => {
-      if (data && data.length && data[0]) {
+      if (data && data[0]) {
         event.sender.send('slugify-select-dir', data[0]);
       }
     }
@@ -223,6 +223,8 @@ app.on('ready', async () => {
 
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
+
+  mainWindow.setMenuBarVisibility(false);
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
