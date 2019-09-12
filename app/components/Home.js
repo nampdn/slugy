@@ -100,7 +100,7 @@ const Home = () => {
         </button>
       </div>
       <span className={styles.version}>
-        Phiên bản: 1.0.1 - Phát hành: 11/09/2019
+        Phiên bản: 1.0.2 - Phát hành: 12/09/2019
       </span>
     </div>
   );
