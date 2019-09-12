@@ -1,20 +1,50 @@
 // @flow
+import clsx from 'clsx';
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer, remote } from 'electron';
 import { makeStyles } from '@material-ui/core/styles';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
+import NavigationIcon from '@material-ui/icons/Navigation';
+import CheckIcon from '@material-ui/icons/Check';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { green } from '@material-ui/core/colors';
 
 import styles from './Home.css';
 
 const useStyles = makeStyles(theme => ({
+  wrapper: {
+    margin: theme.spacing(2),
+    position: 'relative',
+    alignSelf: 'center'
+  },
+  fabProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: -5,
+    left: -5,
+    zIndex: 1
+  },
+  button: {
+    margin: theme.spacing(1)
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(0)
+  },
   container: {
     display: 'flex',
-    flexWrap: 'wrap',
     flexDirection: 'column'
   },
   formControl: {
     margin: theme.spacing(1)
+  },
+  buttonSuccess: {
+    backgroundColor: green[500],
+    '&:hover': {
+      backgroundColor: green[700]
+    }
   }
 }));
 
@@ -28,6 +58,11 @@ const Home = () => {
 
   const [capitalize, setCapitalize] = useState(false);
   const [removeSpace, setRemoveSpace] = useState(false);
+  const [numberDash, setNumberDash] = useState(false);
+
+  const buttonClassname = clsx({
+    [classes.buttonSuccess]: isCompleted
+  });
 
   useEffect(() => {
     // eslint:disable-next-line
@@ -82,7 +117,12 @@ const Home = () => {
 
   function confirm() {
     if (path !== '?' && !isWorking) {
-      ipcRenderer.send('slugify-dir', { path, capitalize, removeSpace });
+      ipcRenderer.send('slugify-dir', {
+        path,
+        capitalize,
+        removeSpace,
+        numberDash
+      });
     }
   }
 
@@ -94,16 +134,16 @@ const Home = () => {
       case 'removespace':
         setRemoveSpace(!removeSpace);
         break;
+      case 'numberdash':
+        setNumberDash(!numberDash);
+        break;
       default:
     }
   };
 
   return (
     <div className={styles.container} data-tid="container">
-      <div
-        className={styles.vertical}
-        style={{ flex: 1, maxHeight: 500, minHeight: 300 }}
-      >
+      <div className={styles.vertical} style={{ flex: 1, minHeight: 300 }}>
         <div className={styles.brand}>
           <h3>SLUGY</h3>
           <span className={styles.description}>
@@ -113,19 +153,19 @@ const Home = () => {
         <div
           className={styles.vertical}
           style={{
-            margin: '20px 0 20px 0',
             justifyContent: 'center',
             alignItems: 'center'
           }}
         >
-          <button
-            className={styles.button}
-            style={{ margin: '20px' }}
-            type="button"
-            onClick={openDirectory}
-          >
-            Chọn thư mục...
-          </button>
+          <div style={{ margin: '5px' }}>
+            <Button
+              variant="contained"
+              className={classes.button}
+              onClick={openDirectory}
+            >
+              Chọn thư mục...
+            </Button>
+          </div>
           <span className={styles.path}>{path}</span>
           <div className={classes.container}>
             <FormControlLabel
@@ -146,17 +186,36 @@ const Home = () => {
               }
               label="Xóa Khoảng Cách"
             />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={numberDash}
+                  onChange={handleSwitch('numberdash')}
+                />
+              }
+              label="Gạch Ngang Sau Số"
+            />
           </div>
         </div>
         <span className={styles.version}>{status}</span>
-        <button
-          onClick={confirm}
-          className={styles.confirmButton}
-          type="button"
-          disabled={isWorking}
-        >
-          GO!
-        </button>
+        <div className={classes.wrapper}>
+          <Fab
+            onClick={confirm}
+            disabled={isWorking || path === '?'}
+            variant="extended"
+            className={buttonClassname}
+            style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '28px'
+            }}
+          >
+            {isCompleted ? <CheckIcon /> : <NavigationIcon />}
+          </Fab>
+          {isWorking && (
+            <CircularProgress size={62} className={classes.fabProgress} />
+          )}
+        </div>
       </div>
       <span className={styles.version}>
         Phiên bản: {version} - Phát hành: 12/09/2019

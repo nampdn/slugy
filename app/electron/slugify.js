@@ -55,15 +55,17 @@ libSlugify.extend({
 });
 
 export const processFileName = (fileName, options) => {
-  const { capitalize, removeSpace } = options;
+  const { capitalize, removeSpace, numberDash } = options;
   let newName = fileName;
   newName = newName.replace(/\u012D/g, 'i');
-  newName = newName
-    .split(' ')
-    .map(word =>
-      /^[A-Za-z0-9]*\d+$/gi.test(word.trim()) ? `${word}___` : word
-    )
-    .join(' ');
+  newName = numberDash
+    ? newName
+        .split(' ')
+        .map(word =>
+          /^[A-Za-z0-9]*\d+$/gi.test(word.trim()) ? `${word}___` : word
+        )
+        .join(' ')
+    : newName;
   newName = capitalize
     ? newName
         .split(' ')
@@ -77,11 +79,16 @@ export const processFileName = (fileName, options) => {
   return newName;
 };
 
-const postProcess = str => str.replace('___', '-');
+const postProcess = (str, options) => {
+  const { numberDash } = options;
+  let newName = str;
+  newName = numberDash ? newName.replace('___', '-') : newName;
+  return newName;
+};
 
 export const slugify = (str, options) => {
   let temp = processFileName(str, options);
   temp = libSlugify(temp);
-  temp = postProcess(temp);
+  temp = postProcess(temp, options);
   return temp;
 };

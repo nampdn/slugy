@@ -82,7 +82,7 @@ app.on('ready', async () => {
     height: 640,
     minHeight: 640,
     webPreferences: {
-      devTools: false
+      devTools: true
     }
   });
 
