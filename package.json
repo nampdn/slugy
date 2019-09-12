@@ -1,7 +1,7 @@
 {
   "name": "slugy",
   "productName": "Slugy",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Slugify all files recursively",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -103,18 +103,6 @@
     "email": "nampdn@protonmail.com",
     "url": "https://slugy.barajs.dev"
   },
-  "contributors": [
-    {
-      "name": "Vikram Rangaraj",
-      "email": "vikr01@icloud.com",
-      "url": "https://github.com/vikr01"
-    },
-    {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
-    }
-  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"

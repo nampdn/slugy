@@ -1,9 +1,10 @@
 // @flow
 import React, { useState, useEffect } from 'react';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 import styles from './Home.css';
 
 const Home = () => {
+  const [version, setVersion] = useState('');
   const [path, setPath] = useState('?');
   const [status, setStatus] = useState('Chưa chọn đường dẫn');
   const [isWorking, setIsWorking] = useState(false);
@@ -44,6 +45,8 @@ const Home = () => {
 
   useEffect(
     () => {
+      const appVersion = remote.app.getVersion();
+      setVersion(appVersion);
       if (path !== '?' && !isWorking && !isCompleted) {
         setStatus('Nhấn OK để bắt đầu!');
       }
@@ -105,7 +108,7 @@ const Home = () => {
         </button>
       </div>
       <span className={styles.version}>
-        Phiên bản: 1.1.0 - Phát hành: 12/09/2019
+        Phiên bản: {version} - Phát hành: 12/09/2019
       </span>
     </div>
   );
