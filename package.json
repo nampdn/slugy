@@ -1,7 +1,7 @@
 {
   "name": "slugy",
   "productName": "Slugy",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Slugify all files recursively",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",

@@ -2,64 +2,11 @@ import { dialog } from 'electron';
 import { join, parse } from 'path';
 import { walk, mkdirpAsync, renameAsync } from '@vgm/nodeasync';
 import pAll from 'p-all';
-import slugify from 'slugify';
 import deleteEmpty from 'delete-empty';
-import changeCase from 'change-case';
+
+import { slugify } from './slugify';
 
 const isWin = process.platform === 'win32';
-
-slugify.extend({
-  Ƀ: 'B',
-  č: 'c',
-  Č: 'C',
-  â̆: 'a',
-  Â̆: 'A',
-  Đ: 'D',
-  đ: 'd',
-  ĕ: 'e',
-  Ĕ: 'E',
-  ê̆: 'e',
-  Ê̆: 'E',
-  Ĭ: 'I',
-  ô̆: 'o',
-  ơ̆: 'o',
-  Ơ̆: 'O',
-  ŭ: 'u',
-  Ŭ: 'U',
-  ư̆: 'u',
-  Ư̆: 'U',
-  ñ: 'n',
-  Ñ: 'N',
-  î: 'i',
-  Î: 'I',
-  î̀: 'i',
-  Î̀: 'I',
-  ò: 'o',
-  Ọ̀: 'O',
-  ọ̆: 'o',
-  Ọ̆: 'O',
-  ŏ: 'o',
-  ơ: 'o',
-  ĭ: 'i',
-  '!': '_',
-  '@': '_',
-  '#': '_',
-  $: '_',
-  '%': '_',
-  '^': '_',
-  '&': '_',
-  '*': '_',
-  '(': '_',
-  ')': '_',
-  '?': '_',
-  ':': '_',
-  ';': '_',
-  "'": '_',
-  '"': '_',
-  ',': '_',
-  '|': '_',
-  '+': '_'
-});
 
 export const showDirectory = (event, mainWindow) => {
   dialog.showOpenDialog(
@@ -84,12 +31,14 @@ export const getRelPath = (inputRoot, input) => {
   return '';
 };
 
-export const renameDirectory = async (root, path) => {
+export const renameDirectory = async (root, path, options) => {
   if (path.endsWith('.DS_Store')) return null;
   const relPath = getRelPath(root, path);
   const { dir: oldDir } = relPath !== '' ? parse(relPath) : root;
   const delimiter = isWin ? '\\' : '/';
-  const slugifiedPath = join(...relPath.split(delimiter).map(p => slugify(p)));
+  const slugifiedPath = join(
+    ...relPath.split(delimiter).map(p => slugify(p, options))
+  );
   const { dir: newDir } = parse(join(root, slugifiedPath));
   await mkdirpAsync(newDir);
   return { oldDir, newDir };
@@ -97,18 +46,8 @@ export const renameDirectory = async (root, path) => {
 
 export const renameFile = (file, newDir, options) => {
   const { ext, name } = parse(file);
-  const preprocessName = processFileName(name, options);
-  const newFile = join(newDir, slugify(preprocessName) + ext);
+  const newFile = join(newDir, slugify(name, options) + ext);
   return renameAsync(file, newFile);
-};
-
-const processFileName = (fileName, options) => {
-  const { capitalize, removeSpace } = options;
-  let newName = fileName;
-  newName = newName.replace(/\u012D/g, 'i');
-  newName = capitalize ? changeCase.pascalCase(newName) : newName;
-  newName = removeSpace ? newName.replace(/\s/g, '') : newName;
-  return newName;
 };
 
 export const moveAll = async (root, files, options) => {
