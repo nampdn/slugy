@@ -71,10 +71,8 @@ export const moveAll = async (root, files, options) => {
 };
 
 export const slugy = async (event, data) => {
-  const { path: root, capitalize, removeSpace } = data;
-  const options = { capitalize, removeSpace };
+  const { path: root, ...options } = data;
   event.sender.send('slugify-progress', 'loading');
-  console.log(options);
   setTimeout(async () => {
     const files = await walk(root);
     if (files.length) {
