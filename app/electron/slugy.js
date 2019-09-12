@@ -19,7 +19,6 @@ slugify.extend({
   Ĕ: 'E',
   ê̆: 'e',
   Ê̆: 'E',
-  ĭ: 'ĭ',
   Ĭ: 'I',
   ô̆: 'o',
   ơ̆: 'o',
@@ -30,7 +29,6 @@ slugify.extend({
   Ư̆: 'U',
   ñ: 'n',
   Ñ: 'N',
-  ĭ: 'i',
   î: 'i',
   Î: 'I',
   î̀: 'i',
@@ -39,7 +37,9 @@ slugify.extend({
   Ọ̀: 'O',
   ọ̆: 'o',
   Ọ̆: 'O',
-  ŏ: 'o'
+  ŏ: 'o',
+  ơ: 'o',
+  ĭ: 'i'
 });
 
 export const showDirectory = (event, mainWindow) => {
@@ -78,7 +78,7 @@ export const renameDirectory = async (root, path) => {
 
 export const renameFile = (file, newDir) => {
   const { ext, name } = parse(file);
-  const preprocessName = name.replace(/ĭ/g, 'i');
+  const preprocessName = name.replace(/\u012D/g, 'i');
   const newFile = join(newDir, slugify(preprocessName) + ext);
   return renameAsync(file, newFile);
 };
