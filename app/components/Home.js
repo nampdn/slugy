@@ -1,7 +1,22 @@
 // @flow
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer, remote } from 'electron';
+import { makeStyles } from '@material-ui/core/styles';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+
 import styles from './Home.css';
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    flexDirection: 'column'
+  },
+  formControl: {
+    margin: theme.spacing(1)
+  }
+}));
 
 const Home = () => {
   const [version, setVersion] = useState('');
@@ -9,6 +24,10 @@ const Home = () => {
   const [status, setStatus] = useState('Chưa chọn đường dẫn');
   const [isWorking, setIsWorking] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const classes = useStyles();
+
+  const [capitalize, setCapitalize] = useState(false);
+  const [removeSpace, setRemoveSpace] = useState(false);
 
   useEffect(() => {
     // eslint:disable-next-line
@@ -48,7 +67,7 @@ const Home = () => {
       const appVersion = remote.app.getVersion();
       setVersion(appVersion);
       if (path !== '?' && !isWorking && !isCompleted) {
-        setStatus('Nhấn OK để bắt đầu!');
+        setStatus('Nhấn GO để bắt đầu!');
       }
       if (isCompleted) {
         setStatus('Hoàn Tất!');
@@ -63,9 +82,21 @@ const Home = () => {
 
   function confirm() {
     if (path !== '?' && !isWorking) {
-      ipcRenderer.send('slugify-dir', path);
+      ipcRenderer.send('slugify-dir', { path, capitalize, removeSpace });
     }
   }
+
+  const handleSwitch = which => () => {
+    switch (which) {
+      case 'capitalize':
+        setCapitalize(!capitalize);
+        break;
+      case 'removespace':
+        setRemoveSpace(!removeSpace);
+        break;
+      default:
+    }
+  };
 
   return (
     <div className={styles.container} data-tid="container">
@@ -96,6 +127,26 @@ const Home = () => {
             Chọn thư mục...
           </button>
           <span className={styles.path}>{path}</span>
+          <div className={classes.container}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={capitalize}
+                  onChange={handleSwitch('capitalize')}
+                />
+              }
+              label="In hoa chữ đầu"
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={removeSpace}
+                  onChange={handleSwitch('removespace')}
+                />
+              }
+              label="Xóa Khoảng Cách"
+            />
+          </div>
         </div>
         <span className={styles.version}>{status}</span>
         <button

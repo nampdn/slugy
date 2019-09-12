@@ -4,6 +4,7 @@ import { walk, mkdirpAsync, renameAsync } from '@vgm/nodeasync';
 import pAll from 'p-all';
 import slugify from 'slugify';
 import deleteEmpty from 'delete-empty';
+import changeCase from 'change-case';
 
 const isWin = process.platform === 'win32';
 
@@ -94,21 +95,30 @@ export const renameDirectory = async (root, path) => {
   return { oldDir, newDir };
 };
 
-export const renameFile = (file, newDir) => {
+export const renameFile = (file, newDir, options) => {
   const { ext, name } = parse(file);
-  const preprocessName = name.replace(/\u012D/g, 'i');
+  const preprocessName = processFileName(name, options);
   const newFile = join(newDir, slugify(preprocessName) + ext);
   return renameAsync(file, newFile);
 };
 
-export const moveAll = async (root, files) => {
+const processFileName = (fileName, options) => {
+  const { capitalize, removeSpace } = options;
+  let newName = fileName;
+  newName = newName.replace(/\u012D/g, 'i');
+  newName = capitalize ? changeCase.pascalCase(newName) : newName;
+  newName = removeSpace ? newName.replace(/\s/g, '') : newName;
+  return newName;
+};
+
+export const moveAll = async (root, files, options) => {
   const oldDirs = [];
   console.log(`Attempting to move: ${files.length} files`);
   const all = files.map(file => async () => {
-    const dirData = await renameDirectory(root, file);
+    const dirData = await renameDirectory(root, file, options);
     if (dirData) {
       const { oldDir, newDir } = dirData;
-      await renameFile(file, newDir);
+      await renameFile(file, newDir, options);
       oldDirs.push(oldDir); // marker for later earaser
     }
   });
@@ -121,14 +131,17 @@ export const moveAll = async (root, files) => {
   return oldDirs;
 };
 
-export const slugy = async (event, root) => {
+export const slugy = async (event, data) => {
+  const { path: root, capitalize, removeSpace } = data;
+  const options = { capitalize, removeSpace };
   event.sender.send('slugify-progress', 'loading');
+  console.log(options);
   setTimeout(async () => {
     const files = await walk(root);
     if (files.length) {
       try {
         event.sender.send('slugify-progress', 'loading-move');
-        await moveAll(root, files);
+        await moveAll(root, files, options);
         event.sender.send('slugify-progress', 'loading-clean');
         await deleteEmpty(root);
         event.sender.send('slugify-progress', 'success');
