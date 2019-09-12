@@ -7,12 +7,14 @@ const Home = () => {
   const [path, setPath] = useState('?');
   const [status, setStatus] = useState('Chưa chọn đường dẫn');
   const [isWorking, setIsWorking] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
     // eslint:disable-next-line
     ipcRenderer.on('slugify-select-dir', (_, selectedPath) => {
       setPath(selectedPath);
       setIsWorking(false);
+      setIsCompleted(false);
     });
 
     ipcRenderer.on('slugify-progress', (_, state) => {
@@ -28,11 +30,11 @@ const Home = () => {
           setStatus('Đang dọn dẹp...');
           break;
         case 'success':
-          setStatus('Hoàn Tất');
           setIsWorking(false);
+          setIsCompleted(true);
           break;
         case 'error':
-          setStatus(`Lỗi!`);
+          setStatus(`Có lỗi xảy ra, kiểm tra lại thư mục!`);
           setIsWorking(false);
           break;
         default:
@@ -42,11 +44,14 @@ const Home = () => {
 
   useEffect(
     () => {
-      if (path !== '?' && !isWorking) {
+      if (path !== '?' && !isWorking && !isCompleted) {
         setStatus('Nhấn OK để bắt đầu!');
       }
+      if (isCompleted) {
+        setStatus('Hoàn Tất!');
+      }
     },
-    [path, isWorking]
+    [path, isWorking, isCompleted]
   );
 
   function openDirectory() {

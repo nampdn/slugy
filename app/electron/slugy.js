@@ -78,7 +78,8 @@ export const renameDirectory = async (root, path) => {
 
 export const renameFile = (file, newDir) => {
   const { ext, name } = parse(file);
-  const newFile = join(newDir, slugify(name) + ext);
+  const preprocessName = name.replace(/ĭ/g, 'i');
+  const newFile = join(newDir, slugify(preprocessName) + ext);
   return renameAsync(file, newFile);
 };
 
