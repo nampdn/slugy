@@ -2,6 +2,9 @@ import changeCase from 'change-case';
 import libSlugify from 'slugify';
 
 libSlugify.extend({
+  '“': '',
+  '”': '',
+  '.': '',
   Ƀ: 'B',
   č: 'c',
   Č: 'C',
@@ -82,7 +85,9 @@ export const processFileName = (fileName, options) => {
 const postProcess = (str, options) => {
   const { numberDash } = options;
   let newName = str;
-  newName = numberDash ? newName.replace('___', '-') : newName;
+  newName = numberDash ? newName.replace(/___/g, '-') : newName;
+  newName =
+    numberDash && newName.endsWith('-') ? newName.replace(/-$/, '') : newName;
   return newName;
 };
 
