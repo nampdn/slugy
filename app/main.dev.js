@@ -86,6 +86,8 @@ app.on('ready', async () => {
     }
   });
 
+  mainWindow.setSize(400, 640);
+
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
   // @TODO: Use 'ready-to-show' event
