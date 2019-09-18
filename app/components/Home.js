@@ -2,7 +2,7 @@
 import clsx from 'clsx';
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer, remote } from 'electron';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
@@ -10,7 +10,7 @@ import Fab from '@material-ui/core/Fab';
 import NavigationIcon from '@material-ui/icons/Navigation';
 import CheckIcon from '@material-ui/icons/Check';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { green } from '@material-ui/core/colors';
+import { green, yellow } from '@material-ui/core/colors';
 
 import styles from './Home.css';
 
@@ -47,6 +47,19 @@ const useStyles = makeStyles(theme => ({
     }
   }
 }));
+
+const GreenSwitch = withStyles({
+  switchBase: {
+    '&$checked': {
+      color: yellow[500]
+    },
+    '&$checked + $track': {
+      backgroundColor: yellow[500]
+    }
+  },
+  checked: {},
+  track: {}
+})(Switch);
 
 const Home = () => {
   const [version, setVersion] = useState('');
@@ -91,6 +104,8 @@ const Home = () => {
         case 'error':
           setStatus(`Có lỗi xảy ra, kiểm tra lại thư mục!`);
           setIsWorking(false);
+          setIsCompleted(false);
+          alert(`Có lỗi xảy ra, kiểm tra lại thư mục!`);
           break;
         default:
       }
@@ -170,7 +185,7 @@ const Home = () => {
           <div className={classes.container}>
             <FormControlLabel
               control={
-                <Switch
+                <GreenSwitch
                   checked={capitalize}
                   onChange={handleSwitch('capitalize')}
                 />
@@ -179,7 +194,7 @@ const Home = () => {
             />
             <FormControlLabel
               control={
-                <Switch
+                <GreenSwitch
                   checked={removeSpace}
                   onChange={handleSwitch('removespace')}
                 />
@@ -188,7 +203,7 @@ const Home = () => {
             />
             <FormControlLabel
               control={
-                <Switch
+                <GreenSwitch
                   checked={numberDash}
                   onChange={handleSwitch('numberdash')}
                 />
@@ -218,7 +233,7 @@ const Home = () => {
         </div>
       </div>
       <span className={styles.version}>
-        Phiên bản: {version} - Phát hành: 12/09/2019
+        Phiên bản: {version} - Phát hành: 18/09/2019
       </span>
     </div>
   );
